@@ -5,11 +5,6 @@
     "dockerfile": "Dockerfile"
   },
 
-  // Mount the host Docker socket
-  "mounts": [
-    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
-  ],
-
   // Mount both repos into workspace
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
   "workspaceFolder": "/workspace",
@@ -34,6 +29,9 @@
   },
 
   "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": false
+    },
     // Adds gh CLI, useful for cross-repo operations
     "ghcr.io/devcontainers/features/github-cli:1": {}
   }
