@@ -5,6 +5,10 @@
     "dockerfile": "Dockerfile"
   },
 
+  // Remove the container when it stops so VS Code recreates it cleanly.
+  "runArgs": ["--rm"],
+  "shutdownAction": "stopContainer",
+
   "mounts": [
     "source=${localEnv:SSH_AUTH_SOCK},target=/ssh-agent,type=bind"
   ],
