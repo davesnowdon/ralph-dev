@@ -1,0 +1,8 @@
+{
+  "folders": [
+    { "name": "workspace", "path": "." },
+    { "name": "sandbox",   "path": "./ralph-sandbox" },
+    { "name": "ralph++",   "path": "./ralph-plus-plus" }
+  ],
+  "settings": {}
+}
