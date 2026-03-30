@@ -46,6 +46,10 @@
       "moby": false
     },
     // Adds gh CLI, useful for cross-repo operations
-    "ghcr.io/devcontainers/features/github-cli:1": {}
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    // Node.js required by pyright type checker
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    }
   }
 }

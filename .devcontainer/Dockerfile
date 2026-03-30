@@ -5,10 +5,11 @@ FROM python:3.12-slim
 RUN apt-get update && apt-get install -y \
     git \
     ca-certificates \
+    make \
     && rm -rf /var/lib/apt/lists/*
 
-# Install uv for fast Python dependency management
-RUN pip install uv
+# Install uv and shell linting tools
+RUN pip install uv shellcheck-py shfmt-py
 
 # Create non-root user
 ARG USERNAME=vscode
