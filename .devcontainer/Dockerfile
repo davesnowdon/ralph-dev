@@ -3,10 +3,14 @@ FROM python:3.12-slim
 
 # Install system deps
 RUN apt-get update && apt-get install -y \
+    bash-completion \
     git \
     ca-certificates \
     make \
     && rm -rf /var/lib/apt/lists/*
+
+# Enable bash completion for interactive shells in the devcontainer.
+RUN printf '\nif [ -f /usr/share/bash-completion/bash_completion ]; then\n  . /usr/share/bash-completion/bash_completion\nfi\n' >> /etc/bash.bashrc
 
 # Install uv and shell linting tools
 RUN pip install uv shellcheck-py shfmt-py
