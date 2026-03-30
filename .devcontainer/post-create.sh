@@ -1,12 +1,27 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
-echo "Installing ralph-sandbox deps..."
-cd /workspace/ralph-sandbox
-uv pip install --system -e ".[dev]" 2>/dev/null || pip install -e ".[dev]"
+echo "Ralph dev container bootstrap"
+echo "Workspace: $(pwd)"
 
-echo "Installing ralph-plus-plus deps..."
-cd /workspace/ralph-plus-plus
-uv pip install --system -e ".[dev]" 2>/dev/null || pip install -e ".[dev]"
+echo
+echo "Available tools:"
+python --version
+git --version
+uv --version
+docker --version || true
 
-echo "Dev container ready."
+echo
+echo "Docker socket:"
+if [ -S /var/run/docker.sock ]; then
+  ls -l /var/run/docker.sock
+else
+  echo "Docker socket not mounted at /var/run/docker.sock"
+fi
+
+echo
+echo "Submodules:"
+git submodule status || true
+
+echo
+echo "Dev container ready. No package installation was performed."

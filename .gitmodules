@@ -1,6 +1,8 @@
 [submodule "ralph-sandbox"]
 	path = ralph-sandbox
 	url = git@github.com:davesnowdon/ralph-sandbox.git
+	branch = main
 [submodule "ralph-plus-plus"]
 	path = ralph-plus-plus
 	url = git@github.com:davesnowdon/ralph-plus-plus.git
+	branch = main

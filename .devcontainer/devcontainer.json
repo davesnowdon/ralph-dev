@@ -5,10 +5,17 @@
     "dockerfile": "Dockerfile"
   },
 
-  // Mount the host Docker socket
+  // Remove the container when it stops so VS Code recreates it cleanly.
+  "runArgs": ["--rm"],
+  "shutdownAction": "stopContainer",
+
   "mounts": [
-    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+    "source=${localEnv:SSH_AUTH_SOCK},target=/ssh-agent,type=bind"
   ],
+
+  "remoteEnv": {
+    "SSH_AUTH_SOCK": "/ssh-agent"
+  },
 
   // Mount both repos into workspace
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
@@ -21,6 +28,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "Anthropic.claude-code",
         "ms-python.python",
         "ms-python.vscode-pylance",
         "charliermarsh.ruff",
@@ -34,6 +42,9 @@
   },
 
   "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": false
+    },
     // Adds gh CLI, useful for cross-repo operations
     "ghcr.io/devcontainers/features/github-cli:1": {}
   }
