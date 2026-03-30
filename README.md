@@ -51,18 +51,17 @@ The devcontainer is intentionally minimal:
 That keeps startup cheap and avoids pretending both repos share one Python
 packaging model when they do not.
 
-## Current Integration Direction
+## Integration Model
 
-The intended long-term integration is:
+The intended integration is:
 
 1. `ralph-plus-plus` prepares worktree state and orchestration inputs.
 2. `ralph-plus-plus` invokes `ralph-sandbox` through its supported wrapper.
 3. `ralph-sandbox` runs either its default Ralph loop or a custom
    `SESSION_RUNNER`.
 
-At the moment, the main integration hardening still to do is moving
-`ralph-plus-plus` from a raw `docker run` call to `ralph-sandbox`'s
-`SESSION_RUNNER` interface.
+This workspace exists so both sides of that contract can be developed and
+validated together.
 
 ## Devcontainer
 
