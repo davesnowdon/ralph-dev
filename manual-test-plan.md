@@ -43,8 +43,11 @@ run_case() {
   local case_name="$1"; shift
   local raw="$LOGS_DIR/${case_name}-raw.log"
   local clean="$LOGS_DIR/${case_name}-clean.log"
+  local cmd
+  cmd="$(printf '%q ' "$@")"
   echo "▶ $case_name → $raw"
-  script -q -c "$*" "$raw"
+  echo "$ $cmd" > "$raw"
+  script -q -a -c "$cmd" "$raw"
   local rc=$?
   ansifilter -o "$clean" "$raw"
   echo "  exit=$rc  clean log: $clean"
