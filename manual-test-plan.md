@@ -134,7 +134,7 @@ cd "$RPP_DIR"
 run_case case1-delegated-claude \
   uv run ralph++ \
     --repo "$KC_AGENT_REPO" \
-    --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL using Claude in delegated mode" \
+    --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL" \
     --mode delegated \
     --claude-config "$HOME/.claude" \
     --max-iters 10
@@ -170,7 +170,7 @@ cd "$RPP_DIR"
 run_case case2-delegated-codex \
   uv run ralph++ \
     --repo "$KC_AGENT_REPO" \
-    --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL using Codex in delegated mode" \
+    --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL" \
     --mode delegated \
     --codex-config "$HOME/.codex" \
     --max-iters 10
@@ -204,9 +204,9 @@ ralph:
   max_iterations: 10
 
 orchestrated:
-  coder: codex
+  coder: claude
   reviewer: codex
-  fixer: codex
+  fixer: claude
   backout_on_failure: true
   max_iteration_retries: 1
   run_tests_between_steps: true
@@ -227,7 +227,7 @@ run_case case3-orch-backout \
   uv run ralph++ \
     --repo "$KC_AGENT_REPO" \
     --config "$KC_AGENT_REPO/.ralph/ralph++-orch-backout.yaml" \
-    --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL in orchestrated mode with backout enabled" \
+    --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL" \
     --codex-config "$HOME/.codex"
 ```
 
@@ -260,9 +260,9 @@ ralph:
   max_iterations: 10
 
 orchestrated:
-  coder: codex
+  coder: claude
   reviewer: codex
-  fixer: codex
+  fixer: claude
   backout_on_failure: false
   max_iteration_retries: 2
   run_tests_between_steps: true
@@ -283,7 +283,7 @@ run_case case4-orch-fixinplace \
   uv run ralph++ \
     --repo "$KC_AGENT_REPO" \
     --config "$KC_AGENT_REPO/.ralph/ralph++-orch-fixinplace.yaml" \
-    --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL in orchestrated mode with in-place fixing" \
+    --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL" \
     --codex-config "$HOME/.codex"
 ```
 
@@ -350,7 +350,7 @@ run_case case5-orch-template \
   uv run ralph++ \
     --repo "$KC_AGENT_REPO" \
     --config "$KC_AGENT_REPO/.ralph/ralph++-orch-template.yaml" \
-    --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL with prompt-template handoff" \
+    --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL" \
     --codex-config "$HOME/.codex"
 ```
 
