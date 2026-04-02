@@ -74,7 +74,11 @@ orchestrated:
   run_tests_between_steps: true
   max_iteration_retries: 1
   test_commands:
-    - pytest -q
+    - hatch run ci
+
+hooks:
+  post_worktree_create:
+    - "hatch env create"
 YAML
 ```
 
@@ -109,7 +113,7 @@ uv run ralph++ \
   --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL using Claude in delegated mode" \
   --mode delegated \
   --claude-config "$HOME/.claude" \
-  --max-iters 4
+  --max-iters 10
 ```
 
 Verify after the run:
@@ -144,7 +148,7 @@ uv run ralph++ \
   --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL using Codex in delegated mode" \
   --mode delegated \
   --codex-config "$HOME/.codex" \
-  --max-iters 4
+  --max-iters 10
 ```
 
 Inspect the created worktree:
@@ -172,7 +176,7 @@ ralph:
   mode: orchestrated
   sandbox_dir: /home/dns/ai-ml/agents/ralph-dev/ralph-sandbox
   session_runner: scripts/ralph-single-step.sh
-  max_iterations: 4
+  max_iterations: 10
 
 orchestrated:
   coder: codex
@@ -182,7 +186,11 @@ orchestrated:
   max_iteration_retries: 1
   run_tests_between_steps: true
   test_commands:
-    - pytest -q
+    - hatch run ci
+
+hooks:
+  post_worktree_create:
+    - "hatch env create"
 YAML
 ```
 
@@ -223,7 +231,7 @@ ralph:
   mode: orchestrated
   sandbox_dir: /home/dns/ai-ml/agents/ralph-dev/ralph-sandbox
   session_runner: scripts/ralph-single-step.sh
-  max_iterations: 4
+  max_iterations: 10
 
 orchestrated:
   coder: codex
@@ -233,7 +241,11 @@ orchestrated:
   max_iteration_retries: 2
   run_tests_between_steps: true
   test_commands:
-    - pytest -q
+    - hatch run ci
+
+hooks:
+  post_worktree_create:
+    - "hatch env create"
 YAML
 ```
 
@@ -273,7 +285,7 @@ ralph:
   mode: orchestrated
   sandbox_dir: /home/dns/ai-ml/agents/ralph-dev/ralph-sandbox
   session_runner: scripts/ralph-single-step.sh
-  max_iterations: 3
+  max_iterations: 10
 
 orchestrated:
   coder: codex
@@ -283,7 +295,7 @@ orchestrated:
   max_iteration_retries: 1
   run_tests_between_steps: true
   test_commands:
-    - pytest -q
+    - hatch run ci
   prompt_template: |
     Read {prd_file} and continue the concrete implementation objective.
 
@@ -296,6 +308,10 @@ orchestrated:
     {progress}
 
     Make the next smallest coherent change and update tests.
+
+hooks:
+  post_worktree_create:
+    - "hatch env create"
 YAML
 ```
 
@@ -487,6 +503,10 @@ orchestrated:
   run_tests_between_steps: true
   test_commands:
     - /bin/false
+
+hooks:
+  post_worktree_create:
+    - "hatch env create"
 YAML
 ```
 
@@ -532,8 +552,9 @@ tools:
   claude:
     type: cli
     command: claude
-    args: ["--dangerously-skip-permissions", "--print"]
+    args: ["--print"]
     stdin: "{prompt}"
+    allowed_tools: ["Read", "Write", "Edit", "Glob", "Grep", "Bash(git:*)"]
 
 orchestrated:
   coder: codex
