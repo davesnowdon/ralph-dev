@@ -228,6 +228,7 @@ run_case case3-orch-backout \
     --repo "$KC_AGENT_REPO" \
     --config "$KC_AGENT_REPO/.ralph/ralph++-orch-backout.yaml" \
     --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL" \
+    --claude-config "$HOME/.claude" \
     --codex-config "$HOME/.codex"
 ```
 
