@@ -32,6 +32,26 @@ export RPP_DIR="$RALPH_DEV_ROOT/ralph-plus-plus"
 export RS_DIR="$RALPH_DEV_ROOT/ralph-sandbox"
 ```
 
+Create a logs directory and a helper function to wrap each run with `script`
+and strip ANSI escapes with `ansifilter`:
+
+```bash
+export LOGS_DIR="$RALPH_DEV_ROOT/logs"
+mkdir -p "$LOGS_DIR"
+
+run_case() {
+  local case_name="$1"; shift
+  local raw="$LOGS_DIR/${case_name}-raw.log"
+  local clean="$LOGS_DIR/${case_name}-clean.log"
+  echo "▶ $case_name → $raw"
+  script -q -c "$*" "$raw"
+  local rc=$?
+  ansifilter -o "$clean" "$raw"
+  echo "  exit=$rc  clean log: $clean"
+  return $rc
+}
+```
+
 Confirm the local toolchains and sandbox resolve cleanly:
 
 ```bash
@@ -108,12 +128,13 @@ For each run below, record:
 
 ```bash
 cd "$RPP_DIR"
-uv run ralph++ \
-  --repo "$KC_AGENT_REPO" \
-  --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL using Claude in delegated mode" \
-  --mode delegated \
-  --claude-config "$HOME/.claude" \
-  --max-iters 10
+run_case case1-delegated-claude \
+  uv run ralph++ \
+    --repo "$KC_AGENT_REPO" \
+    --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL using Claude in delegated mode" \
+    --mode delegated \
+    --claude-config "$HOME/.claude" \
+    --max-iters 10
 ```
 
 Verify after the run:
@@ -143,12 +164,13 @@ Expected focus:
 
 ```bash
 cd "$RPP_DIR"
-uv run ralph++ \
-  --repo "$KC_AGENT_REPO" \
-  --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL using Codex in delegated mode" \
-  --mode delegated \
-  --codex-config "$HOME/.codex" \
-  --max-iters 10
+run_case case2-delegated-codex \
+  uv run ralph++ \
+    --repo "$KC_AGENT_REPO" \
+    --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL using Codex in delegated mode" \
+    --mode delegated \
+    --codex-config "$HOME/.codex" \
+    --max-iters 10
 ```
 
 Inspect the created worktree:
@@ -198,11 +220,12 @@ Run:
 
 ```bash
 cd "$RPP_DIR"
-uv run ralph++ \
-  --repo "$KC_AGENT_REPO" \
-  --config "$KC_AGENT_REPO/.ralph/ralph++-orch-backout.yaml" \
-  --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL in orchestrated mode with backout enabled" \
-  --codex-config "$HOME/.codex"
+run_case case3-orch-backout \
+  uv run ralph++ \
+    --repo "$KC_AGENT_REPO" \
+    --config "$KC_AGENT_REPO/.ralph/ralph++-orch-backout.yaml" \
+    --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL in orchestrated mode with backout enabled" \
+    --codex-config "$HOME/.codex"
 ```
 
 Inspect the resulting worktree:
@@ -253,11 +276,12 @@ Run:
 
 ```bash
 cd "$RPP_DIR"
-uv run ralph++ \
-  --repo "$KC_AGENT_REPO" \
-  --config "$KC_AGENT_REPO/.ralph/ralph++-orch-fixinplace.yaml" \
-  --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL in orchestrated mode with in-place fixing" \
-  --codex-config "$HOME/.codex"
+run_case case4-orch-fixinplace \
+  uv run ralph++ \
+    --repo "$KC_AGENT_REPO" \
+    --config "$KC_AGENT_REPO/.ralph/ralph++-orch-fixinplace.yaml" \
+    --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL in orchestrated mode with in-place fixing" \
+    --codex-config "$HOME/.codex"
 ```
 
 Inspect the resulting worktree:
@@ -319,11 +343,12 @@ Run:
 
 ```bash
 cd "$RPP_DIR"
-uv run ralph++ \
-  --repo "$KC_AGENT_REPO" \
-  --config "$KC_AGENT_REPO/.ralph/ralph++-orch-template.yaml" \
-  --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL with prompt-template handoff" \
-  --codex-config "$HOME/.codex"
+run_case case5-orch-template \
+  uv run ralph++ \
+    --repo "$KC_AGENT_REPO" \
+    --config "$KC_AGENT_REPO/.ralph/ralph++-orch-template.yaml" \
+    --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL with prompt-template handoff" \
+    --codex-config "$HOME/.codex"
 ```
 
 Inspect prompt handoff:
@@ -363,11 +388,12 @@ Run it with Codex selected:
 
 ```bash
 cd "$RS_DIR"
-bin/ralph-sandbox \
-  --project-dir "$KC_AGENT_REPO" \
-  --tool codex \
-  --session-runner /tmp/ralph-sandbox-smoke-runner.sh \
-  -- arg1 arg2
+run_case case6-sandbox-direct \
+  bin/ralph-sandbox \
+    --project-dir "$KC_AGENT_REPO" \
+    --tool codex \
+    --session-runner /tmp/ralph-sandbox-smoke-runner.sh \
+    -- arg1 arg2
 ```
 
 Expected focus:
@@ -390,21 +416,23 @@ Validate the sandbox directly inside that linked worktree:
 
 ```bash
 cd "$RS_DIR"
-bin/ralph-sandbox \
-  --project-dir "$KC_AGENT_LINKED_WORKTREE" \
-  --tool codex \
-  --session-runner /tmp/ralph-sandbox-smoke-runner.sh
+run_case case7a-sandbox-linked-worktree \
+  bin/ralph-sandbox \
+    --project-dir "$KC_AGENT_LINKED_WORKTREE" \
+    --tool codex \
+    --session-runner /tmp/ralph-sandbox-smoke-runner.sh
 ```
 
 Then validate ralph++ against the same repository family:
 
 ```bash
 cd "$RPP_DIR"
-uv run ralph++ \
-  --repo "$KC_AGENT_REPO" \
-  --config "$KC_AGENT_REPO/.ralph/ralph++-orch-backout.yaml" \
-  --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL while validating linked worktree handling" \
-  --codex-config "$HOME/.codex"
+run_case case7b-rpp-linked-worktree \
+  uv run ralph++ \
+    --repo "$KC_AGENT_REPO" \
+    --config "$KC_AGENT_REPO/.ralph/ralph++-orch-backout.yaml" \
+    --feature "Implement the first concrete slice from $KC_AGENT_DOC_URL while validating linked worktree handling" \
+    --codex-config "$HOME/.codex"
 ```
 
 Expected focus:
@@ -420,10 +448,11 @@ Run the following negative cases and capture the exact surfaced error.
 
 ```bash
 cd "$RS_DIR"
-bin/ralph-sandbox \
-  --project-dir "$KC_AGENT_REPO" \
-  --tool codex \
-  --session-runner /tmp/does-not-exist-runner.sh
+run_case case8a-missing-runner \
+  bin/ralph-sandbox \
+    --project-dir "$KC_AGENT_REPO" \
+    --tool codex \
+    --session-runner /tmp/does-not-exist-runner.sh
 ```
 
 Expected result:
@@ -434,11 +463,12 @@ Expected result:
 
 ```bash
 cd "$RS_DIR"
-bin/ralph-sandbox \
-  --project-dir "$KC_AGENT_REPO" \
-  --tool claude \
-  --claude-config-dir /tmp/does-not-exist-claude-config \
-  -- 1
+run_case case8b-missing-claude-config \
+  bin/ralph-sandbox \
+    --project-dir "$KC_AGENT_REPO" \
+    --tool claude \
+    --claude-config-dir /tmp/does-not-exist-claude-config \
+    -- 1
 ```
 
 Expected result:
@@ -451,11 +481,12 @@ Use an invalid service name:
 
 ```bash
 cd "$RS_DIR"
-bin/ralph-sandbox \
-  --project-dir "$KC_AGENT_REPO" \
-  --tool codex \
-  --service does-not-exist \
-  -- 1
+run_case case8c-bad-service \
+  bin/ralph-sandbox \
+    --project-dir "$KC_AGENT_REPO" \
+    --tool codex \
+    --service does-not-exist \
+    -- 1
 ```
 
 Expected result:
@@ -471,11 +502,12 @@ export CASE8D_WORKTREE="/path/from-a-previous-orchestrated-run"
 printf '{ invalid json\n' > "$CASE8D_WORKTREE/scripts/ralph/prd.json"
 
 cd "$RPP_DIR"
-uv run ralph++ \
-  --repo "$CASE8D_WORKTREE" \
-  --config "$KC_AGENT_REPO/.ralph/ralph++-orch-backout.yaml" \
-  --feature "Resume malformed prd.json test" \
-  --codex-config "$HOME/.codex"
+run_case case8d-malformed-prd \
+  uv run ralph++ \
+    --repo "$CASE8D_WORKTREE" \
+    --config "$KC_AGENT_REPO/.ralph/ralph++-orch-backout.yaml" \
+    --feature "Resume malformed prd.json test" \
+    --codex-config "$HOME/.codex"
 ```
 
 Expected result:
@@ -514,11 +546,12 @@ Run:
 
 ```bash
 cd "$RPP_DIR"
-uv run ralph++ \
-  --repo "$KC_AGENT_REPO" \
-  --config "$KC_AGENT_REPO/.ralph/ralph++-orch-failing-tests.yaml" \
-  --feature "Exercise failing-test handling for $KC_AGENT_DOC_URL" \
-  --codex-config "$HOME/.codex"
+run_case case8e-failing-tests \
+  uv run ralph++ \
+    --repo "$KC_AGENT_REPO" \
+    --config "$KC_AGENT_REPO/.ralph/ralph++-orch-failing-tests.yaml" \
+    --feature "Exercise failing-test handling for $KC_AGENT_DOC_URL" \
+    --codex-config "$HOME/.codex"
 ```
 
 Expected result:
@@ -570,11 +603,12 @@ Run:
 
 ```bash
 cd "$RPP_DIR"
-uv run ralph++ \
-  --repo "$KC_AGENT_REPO" \
-  --config "$KC_AGENT_REPO/.ralph/ralph++-orch-fake-reviewer.yaml" \
-  --feature "Exercise non-terminal LGTM parsing for $KC_AGENT_DOC_URL" \
-  --codex-config "$HOME/.codex"
+run_case case8f-fake-reviewer \
+  uv run ralph++ \
+    --repo "$KC_AGENT_REPO" \
+    --config "$KC_AGENT_REPO/.ralph/ralph++-orch-fake-reviewer.yaml" \
+    --feature "Exercise non-terminal LGTM parsing for $KC_AGENT_DOC_URL" \
+    --codex-config "$HOME/.codex"
 ```
 
 Expected result:
