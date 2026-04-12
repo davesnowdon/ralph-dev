@@ -4,5 +4,7 @@
     { "name": "sandbox",   "path": "./ralph-sandbox" },
     { "name": "ralph++",   "path": "./ralph-plus-plus" }
   ],
-  "settings": {}
+  "settings": {
+    "makefile.configureOnOpen": false
+  }
 }

@@ -1,5 +1,3 @@
-export KC_AGENT_REPO="$HOME/src/kc-agent"
-export KC_AGENT_DOC_URL="$HOME/src/kc-agent/docs/memory-unification-plan.md"
 export RALPH_DEV_ROOT="$(pwd)"
 export RPP_DIR="$RALPH_DEV_ROOT/ralph-plus-plus"
 export RS_DIR="$RALPH_DEV_ROOT/ralph-sandbox"
